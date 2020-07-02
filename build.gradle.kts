@@ -13,5 +13,5 @@ dependencies {
 }
 
 application {
-    mainClassName = "game.App"
+    mainClassName = "vision.kodai.game.Main"
 }
