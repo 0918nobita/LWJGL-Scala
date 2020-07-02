@@ -1,3 +1,6 @@
+group = "vision.kodai"
+version = "0.1.0"
+
 plugins {
     scala
     application
