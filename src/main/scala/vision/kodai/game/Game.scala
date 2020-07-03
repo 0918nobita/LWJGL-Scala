@@ -21,7 +21,9 @@ import org.lwjgl.glfw.GLFW.{
   glfwPollEvents,
   glfwSetKeyCallback,
   glfwSetWindowPos,
+  glfwSetWindowAspectRatio,
   glfwSetWindowShouldClose,
+  glfwSetWindowSizeCallback,
   glfwShowWindow,
   glfwSwapBuffers,
   glfwSwapInterval,
@@ -33,26 +35,35 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.{
   GL_COLOR_BUFFER_BIT,
   GL_DEPTH_BUFFER_BIT,
+  GL_TRIANGLES,
+  glBegin,
   glClear,
-  glClearColor
+  glClearColor,
+  glEnd,
+  glVertex3f,
+  glViewport
 }
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.NULL
 
 import scala.util.Using
+import scala.util.control.Exception.ultimately
 
 class Game {
   private var window: Long = NULL
 
   def run(): Unit = {
-    init()
-    loop()
-    glfwFreeCallbacks(window)
-    glfwDestroyWindow(window)
-    glfwTerminate()
+    ultimately {
+      glfwFreeCallbacks(window)
+      glfwTerminate()
+    } {
+      initWindow()
+      render()
+      glfwDestroyWindow(window)
+    }
   }
 
-  private def init(): Unit = {
+  private def initWindow(): Unit = {
     if (!glfwInit())
       throw new IllegalStateException("Unable to initialize GLFW")
 
@@ -70,6 +81,8 @@ class Game {
       if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
         glfwSetWindowShouldClose(w, true)
     })
+
+    glfwSetWindowAspectRatio(window, 1, 1)
 
     // ウィンドウをモニターの中央に配置する
     Using(MemoryStack.stackPush()) { stack =>
@@ -93,20 +106,42 @@ class Game {
     glfwShowWindow(window)
   }
 
-  private def loop(): Unit = {
+  private def render(): Unit = {
     // This line is critical for LWJGL's interoperation with GLFW's
     // OpenGL context, or any context that is managed externally.
     // LWJGL detects the context that is current in the current thread,
     // creates the GLCapabilities instance and makes the OpenGL
     // bindings available for use.
     GL.createCapabilities()
-    glClearColor(1f, 0f, 0f, 0f)
+
+    initGL()
+
     while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) // clear the flamebuffer
+
+      draw()
+
       glfwSwapBuffers(window)
+
       // Poll for window events.
       // The key callback above will only be invoked during this call.
       glfwPollEvents()
     }
+  }
+
+  private def initGL(): Unit = {
+    glfwSetWindowSizeCallback(window, (_, width, height) => {
+      glViewport(0, 0, width, height)
+    })
+
+    glClearColor(0.3f, 0.3f, 0.5f, 0.0f)
+  }
+
+  private def draw(): Unit = {
+    glBegin(GL_TRIANGLES)
+    glVertex3f(-0.6f, 0.2f, 0.5f)
+    glVertex3f(0.6f, -0.4f, -0.5f)
+    glVertex3f(0.8f, 0.6f, 0.0f)
+    glEnd()
   }
 }
