@@ -2,47 +2,14 @@ package vision.kodai.game
 
 import java.nio.IntBuffer
 
+import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
-import org.lwjgl.glfw.GLFW.{
-  GLFW_FALSE,
-  GLFW_KEY_ESCAPE,
-  GLFW_RELEASE,
-  GLFW_RESIZABLE,
-  GLFW_TRUE,
-  GLFW_VISIBLE,
-  glfwCreateWindow,
-  glfwDefaultWindowHints,
-  glfwDestroyWindow,
-  glfwGetPrimaryMonitor,
-  glfwGetVideoMode,
-  glfwGetWindowSize,
-  glfwInit,
-  glfwMakeContextCurrent,
-  glfwPollEvents,
-  glfwSetKeyCallback,
-  glfwSetWindowPos,
-  glfwSetWindowAspectRatio,
-  glfwSetWindowShouldClose,
-  glfwSetWindowSizeCallback,
-  glfwShowWindow,
-  glfwSwapBuffers,
-  glfwSwapInterval,
-  glfwTerminate,
-  glfwWindowHint,
-  glfwWindowShouldClose
-}
+import org.lwjgl.glfw.GLFW._
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11.{
-  GL_COLOR_BUFFER_BIT,
-  GL_DEPTH_BUFFER_BIT,
-  GL_TRIANGLES,
-  glBegin,
-  glClear,
-  glClearColor,
-  glEnd,
-  glVertex3f,
-  glViewport
-}
+import org.lwjgl.opengl.GL11._
+import org.lwjgl.opengl.GL15._
+import org.lwjgl.opengl.GL20._
+import org.lwjgl.opengl.GL30._
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.NULL
 
@@ -51,17 +18,18 @@ import scala.util.control.Exception.ultimately
 
 class Game {
   private var window: Long = NULL
+  private var vArrayId = 0
+  private var vBufferId = 0
 
-  def run(): Unit = {
+  def run(): Unit =
     ultimately {
-      glfwFreeCallbacks(window)
+      finish()
       glfwTerminate()
     } {
       initWindow()
       render()
       glfwDestroyWindow(window)
     }
-  }
 
   private def initWindow(): Unit = {
     if (!glfwInit())
@@ -77,7 +45,7 @@ class Game {
     if (window == NULL) throw new RuntimeException("ウィンドウの生成に失敗しました")
 
     // ESC キーで終了できるようにする
-    glfwSetKeyCallback(window, (w, key, scancode, action, mods) => {
+    glfwSetKeyCallback(window, (w, key, _, action, _) => {
       if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
         glfwSetWindowShouldClose(w, true)
     })
@@ -135,13 +103,46 @@ class Game {
     })
 
     glClearColor(0.3f, 0.3f, 0.5f, 0.0f)
+
+    // format: off
+    val vertices = Array(
+      -0.6f,  0.2f,  0.5f,
+       0.6f, -0.4f, -0.5f,
+       0.8f,  0.6f,  0.0f
+    )
+    // format: on
+    val verticesBuf = BufferUtils.createFloatBuffer(vertices.length)
+    verticesBuf.put(vertices)
+    verticesBuf.flip()
+
+    // VAO (Vertex Array Object)
+    vArrayId = glGenVertexArrays()
+    glBindVertexArray(vArrayId)
+
+    // VBO (Vertex Buffer Object)
+    vBufferId = glGenBuffers()
+    glBindBuffer(GL_ARRAY_BUFFER, vBufferId)
+    glBufferData(GL_ARRAY_BUFFER, verticesBuf, GL_STATIC_DRAW)
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0)
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
+    glBindVertexArray(0)
   }
 
   private def draw(): Unit = {
-    glBegin(GL_TRIANGLES)
-    glVertex3f(-0.6f, 0.2f, 0.5f)
-    glVertex3f(0.6f, -0.4f, -0.5f)
-    glVertex3f(0.8f, 0.6f, 0.0f)
-    glEnd()
+    glBindVertexArray(vArrayId)
+    glEnableVertexAttribArray(0)
+    glDrawArrays(GL_TRIANGLES, 0, 3)
+    glDisableVertexAttribArray(0)
+    glBindVertexArray(0)
+  }
+
+  private def finish(): Unit = {
+    glDisableVertexAttribArray(0)
+    glBindBuffer(GL_ARRAY_BUFFER, 0)
+    glDeleteBuffers(vBufferId)
+    glBindVertexArray(0)
+    glDeleteVertexArrays(vArrayId)
+    glfwFreeCallbacks(window)
   }
 }
