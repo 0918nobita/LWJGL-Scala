@@ -55,15 +55,23 @@ class Game {
   private def init(): Unit = {
     if (!glfwInit())
       throw new IllegalStateException("Unable to initialize GLFW")
-    glfwDefaultWindowHints()
+
+    // ウィンドウの Hint (特性) を指定する (必ずウィンドウ生成の前に行う)
+    glfwDefaultWindowHints() // デフォルトの Hint の読み込み
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE)
+
+    // ウィンドウ生成 (失敗すると異常終了)
     window = glfwCreateWindow(300, 300, "Game", NULL, NULL)
     if (window == NULL) throw new RuntimeException("ウィンドウの生成に失敗しました")
+
+    // ESC キーで終了できるようにする
     glfwSetKeyCallback(window, (w, key, scancode, action, mods) => {
       if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
         glfwSetWindowShouldClose(w, true)
     })
+
+    // ウィンドウをモニターの中央に配置する
     Using(MemoryStack.stackPush()) { stack =>
       val pWidth: IntBuffer = stack.mallocInt(1)
       val pHeight: IntBuffer = stack.mallocInt(1)
@@ -75,8 +83,13 @@ class Game {
         (vidMode.height() - pHeight.get(0)) / 2
       )
     }
+
+    // window を OpenGL の描画対象にする
     glfwMakeContextCurrent(window)
-    glfwSwapInterval(1) // Enable v-sync
+
+    // ダブルバッファリングでの、バッファ入れ替えのタイミング (V-sync) を指定する
+    glfwSwapInterval(1)
+
     glfwShowWindow(window)
   }
 
