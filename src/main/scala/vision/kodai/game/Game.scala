@@ -1,6 +1,7 @@
 package vision.kodai.game
 
 import java.nio.IntBuffer
+import javax.swing.JOptionPane
 
 import org.lwjgl.BufferUtils
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
@@ -40,9 +41,16 @@ class Game {
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE)
 
-    // ウィンドウ生成 (失敗すると異常終了)
     window = glfwCreateWindow(300, 300, "Game", NULL, NULL)
-    if (window == NULL) throw new RuntimeException("ウィンドウの生成に失敗しました")
+    if (window == NULL) {
+      JOptionPane.showMessageDialog(
+        null,
+        "メインウィンドウの生成に失敗しました",
+        "Game",
+        JOptionPane.ERROR_MESSAGE
+      )
+      System.exit(1)
+    }
 
     // ESC キーで終了できるようにする
     glfwSetKeyCallback(window, (w, key, _, action, _) => {
@@ -104,6 +112,7 @@ class Game {
 
     glClearColor(0.3f, 0.3f, 0.5f, 0.0f)
 
+    // VBO の中身となる FloatBuffer を生成し、頂点座標を書き込む
     // format: off
     val vertices = Array(
       -0.6f,  0.2f,  0.5f,
@@ -113,6 +122,7 @@ class Game {
     // format: on
     val verticesBuf = BufferUtils.createFloatBuffer(vertices.length)
     verticesBuf.put(vertices)
+    // これまでに書き込んだ要素だけを読めるようにする
     verticesBuf.flip()
 
     // VAO (Vertex Array Object)
@@ -125,24 +135,32 @@ class Game {
     glBufferData(GL_ARRAY_BUFFER, verticesBuf, GL_STATIC_DRAW)
     glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0)
 
+    // VBO のバインドを解除
     glBindBuffer(GL_ARRAY_BUFFER, 0)
+    // VAO のバインドを解除
     glBindVertexArray(0)
   }
 
   private def draw(): Unit = {
+    // initGL でセットアップした VAO を再びバインドする
     glBindVertexArray(vArrayId)
+    // 最初の頂点属性を使用可能にする
     glEnableVertexAttribArray(0)
     glDrawArrays(GL_TRIANGLES, 0, 3)
+    // 描画が完了したので、頂点属性を使用不可にする
     glDisableVertexAttribArray(0)
     glBindVertexArray(0)
   }
 
   private def finish(): Unit = {
     glDisableVertexAttribArray(0)
+
     glBindBuffer(GL_ARRAY_BUFFER, 0)
     glDeleteBuffers(vBufferId)
+
     glBindVertexArray(0)
     glDeleteVertexArrays(vArrayId)
+
     glfwFreeCallbacks(window)
   }
 }
