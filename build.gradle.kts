@@ -53,4 +53,5 @@ dependencies {
 
 application {
     mainClassName = "vision.kodai.game.Main"
+    if (os.isMacOsX) applicationDefaultJvmArgs = listOf("-XstartOnFirstThread")
 }
