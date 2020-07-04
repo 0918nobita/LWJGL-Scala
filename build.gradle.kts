@@ -25,6 +25,7 @@ val lwjglNatives = when {
 
 dependencies {
     implementation("org.scala-lang:scala-library:2.13.2")
+    implementation("org.typelevel:cats-core_2.13:2.1.1")
 
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
     implementation("org.lwjgl", "lwjgl")
