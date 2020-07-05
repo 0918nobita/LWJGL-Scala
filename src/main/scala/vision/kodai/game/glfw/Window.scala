@@ -3,6 +3,7 @@ package vision.kodai.game.glfw
 import java.nio.IntBuffer
 
 import org.lwjgl.glfw.GLFW.{
+  glfwGetWindowPos,
   glfwGetWindowSize,
   glfwSetKeyCallback,
   glfwSetWindowAspectRatio,
@@ -17,6 +18,17 @@ import org.lwjgl.system.MemoryStack
 import scala.util.Using
 
 class Window(val id: Long) {
+  def pos: (Int, Int) = {
+    Using(MemoryStack.stackPush()) { stack =>
+      val pXPos: IntBuffer = stack.mallocInt(1)
+      val pYPos: IntBuffer = stack.mallocInt(1)
+      glfwGetWindowPos(id, pXPos, pYPos)
+      (pXPos.get(0), pYPos.get(0))
+    }.get
+  }
+
+  def pos_=(pos: (Int, Int)): Unit = glfwSetWindowPos(id, pos._1, pos._2)
+
   def shouldClose: Boolean = glfwWindowShouldClose(id)
 
   def shouldClose_=(flag: Boolean): Unit = glfwSetWindowShouldClose(id, flag)
@@ -35,8 +47,6 @@ class Window(val id: Long) {
 
   def setKeyCallback(callback: GLFWKeyCallbackI): Unit =
     glfwSetKeyCallback(id, callback)
-
-  def setPos(xPos: Int, yPos: Int): Unit = glfwSetWindowPos(id, xPos, yPos)
 
   def setWindowSizeCallback(callback: GLFWWindowSizeCallbackI): Unit =
     glfwSetWindowSizeCallback(id, callback)

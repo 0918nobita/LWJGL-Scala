@@ -128,10 +128,8 @@ class Game {
     // ウィンドウをモニターの中央に配置する
     val (width, height) = window.getSize
     val vidMode         = glfw.videoMode(glfw.primaryMonitor)
-    window.setPos(
-      (vidMode.width() - width) / 2,
-      (vidMode.height() - height) / 2
-    )
+    window.pos =
+      ((vidMode.width() - width) / 2, (vidMode.height() - height) / 2)
 
     window.setWindowSizeCallback { (_, width, height) =>
       glViewport(0, 0, width, height)
