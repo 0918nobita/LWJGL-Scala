@@ -9,6 +9,7 @@ import org.lwjgl.glfw.GLFW.{
   glfwSetWindowAspectRatio,
   glfwSetWindowPos,
   glfwSetWindowShouldClose,
+  glfwSetWindowSize,
   glfwSetWindowSizeCallback,
   glfwWindowShouldClose
 }
@@ -33,7 +34,7 @@ class Window(val id: Long) {
 
   def shouldClose_=(flag: Boolean): Unit = glfwSetWindowShouldClose(id, flag)
 
-  def getSize: (Int, Int) = {
+  def size: (Int, Int) = {
     Using(MemoryStack.stackPush()) { stack =>
       val pWidth: IntBuffer  = stack.mallocInt(1)
       val pHeight: IntBuffer = stack.mallocInt(1)
@@ -41,6 +42,8 @@ class Window(val id: Long) {
       (pWidth.get(0), pHeight.get(0))
     }.get
   }
+
+  def size_=(s: (Int, Int)): Unit = glfwSetWindowSize(id, s._1, s._2)
 
   def setAspectRatio(number: Int, denom: Int): Unit =
     glfwSetWindowAspectRatio(id, number, denom)

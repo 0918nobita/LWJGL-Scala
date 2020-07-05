@@ -126,7 +126,7 @@ class Game {
     window.setAspectRatio(1, 1)
 
     // ウィンドウをモニターの中央に配置する
-    val (width, height) = window.getSize
+    val (width, height) = window.size
     val vidMode         = glfw.videoMode(glfw.primaryMonitor)
     window.pos =
       ((vidMode.width() - width) / 2, (vidMode.height() - height) / 2)
