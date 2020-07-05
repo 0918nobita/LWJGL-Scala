@@ -16,7 +16,7 @@ class WindowBuilder {
   def setHint(hint: Int, value: Int): Unit = glfwWindowHint(hint, value)
 
   /** Indirectly calls glfwCreateWindow */
-  def getResult(
+  def build(
       width: Int,
       height: Int,
       title: String,

@@ -100,7 +100,7 @@ class Game {
     builder.setHint(GLFW_VISIBLE, GLFW_FALSE)
     builder.setHint(GLFW_RESIZABLE, GLFW_TRUE)
 
-    val result = builder.getResult(300, 300, "Game", NULL, NULL)
+    val result = builder.build(300, 300, "Game", NULL, NULL)
     result match {
       case Left(msg) =>
         JOptionPane.showMessageDialog(
