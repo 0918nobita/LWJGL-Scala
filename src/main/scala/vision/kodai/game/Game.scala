@@ -23,7 +23,7 @@ class Game {
   def run(): Unit = {
     Using(Runtime()) { glfw =>
       val window = genWindow()
-      initWindow(window)
+      initWindow(glfw, window)
 
       glfw.makeContextCurrent(window)
       glfw.setSwapInterval(1)
@@ -116,7 +116,7 @@ class Game {
     }
   }
 
-  private def initWindow(window: Window): Unit = {
+  private def initWindow(glfw: Runtime, window: Window): Unit = {
     // ESC キーで終了できるようにする
     window.setKeyCallback { (w, key, _, action, _) =>
       if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
@@ -127,7 +127,7 @@ class Game {
 
     // ウィンドウをモニターの中央に配置する
     val (width, height) = window.getSize
-    val vidMode         = glfwGetVideoMode(glfwGetPrimaryMonitor())
+    val vidMode         = glfw.videoMode(glfw.primaryMonitor)
     window.setPos(
       (vidMode.width() - width) / 2,
       (vidMode.height() - height) / 2
