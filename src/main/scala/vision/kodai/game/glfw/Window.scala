@@ -11,6 +11,7 @@ import org.lwjgl.glfw.GLFW.{
   glfwSetWindowShouldClose,
   glfwSetWindowSize,
   glfwSetWindowSizeCallback,
+  glfwSwapBuffers,
   glfwWindowShouldClose
 }
 import org.lwjgl.glfw.{GLFWKeyCallbackI, GLFWWindowSizeCallbackI}
@@ -53,4 +54,6 @@ class Window(val id: Long) {
 
   def setWindowSizeCallback(callback: GLFWWindowSizeCallbackI): Unit =
     glfwSetWindowSizeCallback(id, callback)
+
+  def swapBuffers(): Unit = glfwSwapBuffers(id)
 }

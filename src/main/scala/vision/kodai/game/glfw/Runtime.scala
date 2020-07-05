@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW.{
   glfwGetVideoMode,
   glfwInit,
   glfwMakeContextCurrent,
+  glfwPollEvents,
   glfwShowWindow,
   glfwSwapInterval
 }
@@ -15,6 +16,9 @@ class Runtime private () {
   /** 指定した window を OpenGL の描画対象にする */
   def makeContextCurrent(window: Window): Unit =
     glfwMakeContextCurrent(window.id)
+
+  /** Poll for window events. */
+  def pollEvents(): Unit = glfwPollEvents()
 
   def primaryMonitor: Long = glfwGetPrimaryMonitor()
 

@@ -84,11 +84,9 @@ class Game {
             vaBinding.disable(0)
           }
 
-          glfwSwapBuffers(window.id)
+          window.swapBuffers()
 
-          // Poll for window events.
-          // The key callback above will only be invoked during this call.
-          glfwPollEvents()
+          glfw.pollEvents()
         }
       }
 
