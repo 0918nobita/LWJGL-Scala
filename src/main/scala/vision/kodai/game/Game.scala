@@ -70,7 +70,7 @@ class Game {
           )
         }
       } yield {
-        while (!glfwWindowShouldClose(window.id)) {
+        while (!window.shouldClose) {
           glClear(
             GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
           ) // clear the flamebuffer
@@ -120,7 +120,7 @@ class Game {
     // ESC キーで終了できるようにする
     window.setKeyCallback { (w, key, _, action, _) =>
       if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-        glfwSetWindowShouldClose(w, true)
+        window.shouldClose = true
     }
 
     window.setAspectRatio(1, 1)

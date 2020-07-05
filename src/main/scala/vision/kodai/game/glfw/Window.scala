@@ -7,7 +7,9 @@ import org.lwjgl.glfw.GLFW.{
   glfwSetKeyCallback,
   glfwSetWindowAspectRatio,
   glfwSetWindowPos,
-  glfwSetWindowSizeCallback
+  glfwSetWindowShouldClose,
+  glfwSetWindowSizeCallback,
+  glfwWindowShouldClose
 }
 import org.lwjgl.glfw.{GLFWKeyCallbackI, GLFWWindowSizeCallbackI}
 import org.lwjgl.system.MemoryStack
@@ -15,6 +17,10 @@ import org.lwjgl.system.MemoryStack
 import scala.util.Using
 
 class Window(val id: Long) {
+  def shouldClose: Boolean = glfwWindowShouldClose(id)
+
+  def shouldClose_=(flag: Boolean): Unit = glfwSetWindowShouldClose(id, flag)
+
   def getSize: (Int, Int) = {
     Using(MemoryStack.stackPush()) { stack =>
       val pWidth: IntBuffer  = stack.mallocInt(1)
