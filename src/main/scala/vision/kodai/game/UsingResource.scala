@@ -2,7 +2,6 @@ package vision.kodai.game
 
 import cats.Eval
 import cats.data.ContT
-
 import scala.util.Using.Releasable
 import scala.util.control.Exception.ultimately
 
