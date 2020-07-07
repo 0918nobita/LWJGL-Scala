@@ -1,59 +1,21 @@
 package vision.kodai.game.glfw
 
-import java.nio.IntBuffer
-
-import org.lwjgl.glfw.GLFW.{
-  glfwGetWindowPos,
-  glfwGetWindowSize,
-  glfwSetKeyCallback,
-  glfwSetWindowAspectRatio,
-  glfwSetWindowPos,
-  glfwSetWindowShouldClose,
-  glfwSetWindowSize,
-  glfwSetWindowSizeCallback,
-  glfwSwapBuffers,
-  glfwWindowShouldClose
-}
 import org.lwjgl.glfw.{GLFWKeyCallbackI, GLFWWindowSizeCallbackI}
-import org.lwjgl.system.MemoryStack
 
-import scala.util.Using
+trait Window {
+  val id: Long
 
-class Window(val id: Long) {
-  def pos: (Int, Int) = {
-    Using(MemoryStack.stackPush()) { stack =>
-      val pXPos: IntBuffer = stack.mallocInt(1)
-      val pYPos: IntBuffer = stack.mallocInt(1)
-      glfwGetWindowPos(id, pXPos, pYPos)
-      (pXPos.get(0), pYPos.get(0))
-    }.get
-  }
+  var pos: (Int, Int)
 
-  def pos_=(pos: (Int, Int)): Unit = glfwSetWindowPos(id, pos._1, pos._2)
+  var shouldClose: Boolean
 
-  def shouldClose: Boolean = glfwWindowShouldClose(id)
+  var size: (Int, Int)
 
-  def shouldClose_=(flag: Boolean): Unit = glfwSetWindowShouldClose(id, flag)
+  def setAspectRatio(number: Int, denom: Int): Unit
 
-  def size: (Int, Int) = {
-    Using(MemoryStack.stackPush()) { stack =>
-      val pWidth: IntBuffer  = stack.mallocInt(1)
-      val pHeight: IntBuffer = stack.mallocInt(1)
-      glfwGetWindowSize(id, pWidth, pHeight)
-      (pWidth.get(0), pHeight.get(0))
-    }.get
-  }
+  def setKeyCallback(callback: GLFWKeyCallbackI): Unit
 
-  def size_=(s: (Int, Int)): Unit = glfwSetWindowSize(id, s._1, s._2)
+  def setWindowSizeCallback(callback: GLFWWindowSizeCallbackI): Unit
 
-  def setAspectRatio(number: Int, denom: Int): Unit =
-    glfwSetWindowAspectRatio(id, number, denom)
-
-  def setKeyCallback(callback: GLFWKeyCallbackI): Unit =
-    glfwSetKeyCallback(id, callback)
-
-  def setWindowSizeCallback(callback: GLFWWindowSizeCallbackI): Unit =
-    glfwSetWindowSizeCallback(id, callback)
-
-  def swapBuffers(): Unit = glfwSwapBuffers(id)
+  def swapBuffers(): Unit
 }
