@@ -7,7 +7,6 @@ import org.lwjgl.glfw.GLFW._
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl.GL15._
-import org.lwjgl.system.MemoryUtil.NULL
 
 import cats.Eval
 import cats.data.ContT
@@ -95,13 +94,15 @@ class Game {
   }
 
   private def genWindow(): Window = {
-    val builder = new WindowBuilder()
-    builder.loadDefaultHints()
-    builder.setHint(GLFW_VISIBLE, GLFW_FALSE)
-    builder.setHint(GLFW_RESIZABLE, GLFW_TRUE)
+    val builder =
+      WindowBuilder()
+        .withWidth(300)
+        .withHeight(300)
+        .withTitle("Game")
+        .withVisible(false)
+        .withResizable(true)
 
-    val result = builder.build(300, 300, "Game", NULL, NULL)
-    result match {
+    builder.build match {
       case Left(msg) =>
         JOptionPane.showMessageDialog(
           null,
